@@ -17,9 +17,8 @@ import { ItemsModule } from './core/items/items.module'
 
 import { CertificatesModule } from './core/certificates/certificates.module'
 
-import { ItemColorsModule } from './core/item-colors/item-colors.module';
-import { ItemMaterialsModule } from './core/item-materials/item-materials.module';
-
+import { ItemColorsModule } from './core/item-colors/item-colors.module'
+import { ItemMaterialsModule } from './core/item-materials/item-materials.module'
 
 @Module({
   imports: [
@@ -42,7 +41,6 @@ import { ItemMaterialsModule } from './core/item-materials/item-materials.module
 
     ItemColorsModule,
     ItemMaterialsModule,
-
   ],
   providers: [ResponseInterceptor],
 })

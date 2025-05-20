@@ -25,6 +25,14 @@ export default tseslint.config(
       },
     },
   },
+  // 🔽 Desactiva 'unbound-method' solo en archivos .spec.ts
+  {
+    files: ['**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
+  // 🔽 Reglas generales
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -38,7 +46,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-return': 'off',
       'object-shorthand': ['error', 'always'],
       'quotes': ['error', 'single'],
-      "@typescript-eslint/await-thenable": "error",
+      '@typescript-eslint/await-thenable': 'error',
     },
   },
 );

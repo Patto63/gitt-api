@@ -14,8 +14,8 @@ export const mockDatabaseService = {
     set: jest.fn().mockReturnThis(),
     delete: jest.fn().mockReturnThis(),
     transaction: jest.fn().mockImplementation(async (callback) => {
-      await callback(mockDatabaseService.db);
+      await callback(mockDatabaseService.db)
     }),
-    leftJoin: jest.fn().mockReturnThis(), 
+    leftJoin: jest.fn().mockReturnThis(),
   },
-};
+}
