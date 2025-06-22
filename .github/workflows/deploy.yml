@@ -1,4 +1,4 @@
-name: Deploy to Rocky Linux Server
+name: Deploy to Rocky Linux Server 
 
 on:
   workflow_run:
