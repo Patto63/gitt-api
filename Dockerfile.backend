@@ -4,9 +4,9 @@ FROM oven/bun:alpine AS builder
 WORKDIR /app
 
 # Copiar archivos de dependencias primero
-COPY bun.lock package.json ./
+COPY bun.lock package.json ./ 
 
-# Instalar TODAS las dependencias, incluyendo devDependencies
+# Instalar todas las dependencias (incluye tsx y demás)
 RUN bun install --frozen-lockfile
 
 # Copiar el resto del código fuente
@@ -21,20 +21,25 @@ FROM oven/bun:alpine AS runner
 
 WORKDIR /app
 
-# Copiar solo los artefactos necesarios desde el builder
+# Copiar artefactos necesarios desde el builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/bun.lock ./bun.lock
 
-# Incluir solo las dependencias de producción
-RUN bun install --frozen-lockfile --production
+# Instalar dependencias de producción + tsx
+RUN bun install --frozen-lockfile
 
-# OPCIONAL: copiar herramientas de seed (para que docker exec funcione)
+# Copiar binarios y dependencias necesarios para semillas
 COPY --from=builder /app/node_modules/.bin /app/node_modules/.bin
 COPY --from=builder /app/node_modules /app/node_modules
+
+# Copiar archivos de seed y configuración
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/tsconfig.json ./
-
+COPY --from=builder /app/drizzle/reset-db.ts ./drizzle/reset-db.ts
+COPY --from=builder /app/drizzle/seed.ts ./drizzle/seed.ts
+COPY --from=builder /app/drizzle/schema.ts ./drizzle/schema.ts
+COPY --from=builder /app/drizzle/data ./drizzle/data
 
 # Exponer el puerto
 EXPOSE 3000
