@@ -12,23 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH Deploy
+      - name: SSH Deploy with Docker Compose
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            cd /home/admingitt/Gitt
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker pull ${{ secrets.DOCKER_USERNAME }}/gitt-backend:latest
-
-            docker stop gitt-backend || true
-            docker rm gitt-backend || true
-
-            docker run -d \
-              --name gitt-backend \
-              --network gitt-network \
-              --env-file /home/admingitt/Gitt/backend/.env \
-              -p 3000:3000 \
-              --restart unless-stopped \
-              ${{ secrets.DOCKER_USERNAME }}/gitt-backend:latest
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d
