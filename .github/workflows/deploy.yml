@@ -32,12 +32,3 @@ jobs:
               -p 3000:3000 \
               --restart unless-stopped \
               ${{ secrets.DOCKER_USERNAME }}/gitt-backend:latest
-
-      - name: Run database seed
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            docker exec gitt-backend bun run db:seed
