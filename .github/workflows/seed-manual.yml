@@ -15,6 +15,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             docker exec gitt-backend node -r tsconfig-paths/register -r ts-node/register drizzle/reset-db.ts
-            docker exec gitt-backend bun x drizzle-kit push
+            docker exec gitt-backend drizzle-kit push
             docker exec gitt-backend node -r tsconfig-paths/register -r ts-node/register drizzle/seed.ts
+
 
