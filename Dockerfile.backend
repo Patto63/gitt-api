@@ -1,43 +1,40 @@
-# Etapa 1: Build con Bun y herramientas de desarrollo
+# Etapa 1: Construcción con Bun
 FROM oven/bun:alpine AS builder
 
 WORKDIR /app
 
-# Copiar archivos de dependencias primero
-COPY bun.lock package.json ./
+# Copiar archivos necesarios
+COPY bun.lock package.json . 
+RUN bun install
 
-# Instalar TODAS las dependencias (dev incluidas)
-RUN bun install --frozen-lockfile
-
-# Copiar el resto del código fuente
+# Copiar todo el código fuente
 COPY . .
 
-# Compilar NestJS
+# Construir el proyecto
 RUN bun run build
 
-
-# Etapa 2: Imagen ligera de producción
+# Etapa 2: Imagen ligera para producción con Node.js
 FROM node:22.15-alpine
 
 WORKDIR /app
 
-# Instalar bash, curl, python3, g++, make y bun
+# Instalar bash, curl, python3 y compiladores para módulos nativos
 RUN apk add --no-cache bash curl python3 g++ make && \
     curl -fsSL https://bun.sh/install | bash
+
 ENV PATH="/root/.bun/bin:$PATH"
 
-# Copiar package.json y dist
-COPY --from=builder /app/package.json ./ 
+# Copiar artefactos desde la etapa builder
+COPY --from=builder /app/package.json .
+COPY --from=builder /app/bun.lock ./bun.lock
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/bun.lockb ./bun.lockb
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/db ./db  # si tu semilla vive aquí
 
-# Instalar dependencias producción
-RUN bun install --production
+# Ya no copiamos /app/db porque no existe. Si luego deseas semillar,
+# lo haces con `bun` desde un `docker exec`.
 
 # Exponer puerto
 EXPOSE 3000
 
-# Comando para iniciar app
+# Comando de arranque
 CMD ["node", "dist/main"]
