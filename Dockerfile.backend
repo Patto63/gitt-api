@@ -1,23 +1,40 @@
-# Etapa 1: Build
+# Etapa 1: Build con Bun
 FROM oven/bun:alpine as builder
 
 WORKDIR /app
 
-COPY bun.lock package.json ./
+# Copiar archivos de dependencias primero
+COPY bun.lockb package.json ./
+
+# Instalar dependencias
 RUN bun install --frozen-lockfile
 
+# Copiar el resto del código fuente
 COPY . .
+
+# Compilar el proyecto NestJS
 RUN bun run build
 
-# Etapa 2: Producción 
+# Etapa 2: Imagen final para producción
 FROM oven/bun:alpine
 
 WORKDIR /app
 
-COPY --from=builder /app .
+# Copiar artefactos construidos
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/bun.lockb ./bun.lockb
 
+# Solo instalar dependencias necesarias en producción
 RUN bun install --frozen-lockfile --production
 
+# Copiar archivos opcionales 
+COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/tsconfig.* ./
+COPY --from=builder /app/tsx.config.* ./   # Opcional si lo usas
+
+# Exponer el puerto de la API
 EXPOSE 3000
 
-CMD ["bun", "run", "prod"]
+# Ejecutar el proyecto
+CMD ["node", "dist/main"]
