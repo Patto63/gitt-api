@@ -40,6 +40,8 @@ COPY --from=builder /app/drizzle/reset-db.ts ./drizzle/reset-db.ts
 COPY --from=builder /app/drizzle/seed.ts ./drizzle/seed.ts
 COPY --from=builder /app/drizzle/schema.ts ./drizzle/schema.ts
 COPY --from=builder /app/drizzle/data ./drizzle/data
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+
 
 # Exponer el puerto del API
 EXPOSE 3000
